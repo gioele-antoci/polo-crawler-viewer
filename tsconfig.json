@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "watch": true,
+        "module": "none",
+        "sourceMap": true
+    }
+}
