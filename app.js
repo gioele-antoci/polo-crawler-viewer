@@ -23,6 +23,7 @@ const render = (obj) => {
         return [key, Math.ceil(objs[key] / elements.length)];
     })
         .sort((a, b) => b[1] - a[1]);
+    document.getElementsByClassName("chart-label")[0].textContent = `This chart represents the average count of HTML elements per website. ${elements.length} websites were crawled.`;
     const myBarChart = new Chart(document.getElementsByClassName("chart-1-canvas")[0], {
         type: 'bar',
         data: {
