@@ -1,5 +1,14 @@
 declare var firebase;
 
+type siteAnalytics = {
+    website: string,
+    maxDepth: number,
+    elements: { [tag: string]: number },
+    hrefObjs: string[],
+    childrenCount: { [count: number]: number },
+    isDeadEnd: boolean
+};
+
 var config = {
     apiKey: "AIzaSyAHVP-IXf_dMMjAPJipmiN0M4dZVmUUeVk",
     authDomain: "polo-crawler-f920e.firebaseapp.com",
@@ -15,8 +24,6 @@ firebase.database().ref("polo/site").once('value').then(function (data) {
 
     const htmlElements = Object.assign({}, ...elements);
 
-    const tempData = [];
-
     var myBarChart = new Chart(
         document.getElementsByClassName("chart-1-canvas")[0] as HTMLCanvasElement,
         {
@@ -30,7 +37,12 @@ firebase.database().ref("polo/site").once('value').then(function (data) {
             },
             options: {
                 scales: {
-
+                    xAxes:
+                    [
+                        {
+                            barThickness: 10
+                        }
+                    ]
                 }
             }
         });

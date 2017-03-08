@@ -29,4 +29,4 @@ firebase.database().ref("polo/site").once('value').then(function (data) {
         }
     });
 });
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=app.js.map
