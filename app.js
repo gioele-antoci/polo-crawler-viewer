@@ -1,32 +1,72 @@
-var config = {
-    apiKey: "AIzaSyAHVP-IXf_dMMjAPJipmiN0M4dZVmUUeVk",
-    authDomain: "polo-crawler-f920e.firebaseapp.com",
-    databaseURL: "https://polo-crawler-f920e.firebaseio.com/"
-};
-firebase.initializeApp(config);
-firebase.database().ref("polo/site").once('value').then(function (data) {
-    const obj = data.val();
+const debug = true;
+if (!debug) {
+    var config = {
+        apiKey: "AIzaSyAHVP-IXf_dMMjAPJipmiN0M4dZVmUUeVk",
+        authDomain: "polo-crawler-f920e.firebaseapp.com",
+        databaseURL: "https://polo-crawler-f920e.firebaseio.com/"
+    };
+    firebase.initializeApp(config);
+}
+const render = (obj) => {
+    window.obj = obj;
     let elements = [];
     elements = elements.concat(Object.keys(obj).map(key => obj[key].elements));
-    const htmlElements = Object.assign({}, ...elements);
-    var myBarChart = new Chart(document.getElementsByClassName("chart-1-canvas")[0], {
-        type: 'horizontalBar',
+    const objs = {};
+    elements.forEach(x => {
+        Object.keys(x || {}).forEach(key => {
+            objs[key] ? objs[key] += x[key] : objs[key] = x[key];
+        });
+    });
+    const htmlElements = Object.keys(objs)
+        .filter(key => objs[key] > elements.length) //filter out rare  elements 
+        .map(key => {
+        return [key, Math.ceil(objs[key] / elements.length)];
+    })
+        .sort((a, b) => b[1] - a[1]);
+    const myBarChart = new Chart(document.getElementsByClassName("chart-1-canvas")[0], {
+        type: 'bar',
         data: {
-            labels: Object.keys(htmlElements).map(key => key),
+            labels: htmlElements.map(x => x[0]),
             datasets: [{
-                    label: "Html Element",
-                    data: Object.keys(htmlElements).map(key => htmlElements[key])
+                    backgroundColor: "#2196F3",
+                    data: htmlElements.map(x => x[1])
                 }]
         },
         options: {
+            maintainAspectRatio: false,
             scales: {
                 xAxes: [
                     {
-                        barThickness: 10
+                        gridLines: false,
+                        ticks: {
+                            autoSkip: false
+                        }
+                    }
+                ],
+                yAxes: [
+                    {
+                        type: "logarithmic",
+                        ticks: {
+                            callback: (el) => {
+                                return el;
+                            }
+                        }
                     }
                 ]
+            },
+            legend: {
+                display: false,
             }
         }
     });
-});
+};
+if (!debug) {
+    firebase.database().ref("polo/site").once('value').then((data) => {
+        const obj = data.val();
+        render(obj);
+    });
+}
+else {
+    fetch("data.json").then(resp => resp.json().then(json => render(json.polo.site)));
+}
 //# sourceMappingURL=app.js.map
